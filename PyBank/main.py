@@ -1,4 +1,4 @@
-#Import denpendacies
+#Import dependacies
 import pandas as pd
 import numpy as np
 
@@ -30,13 +30,28 @@ tot_profit_loss = budget_df["Profit/Losses"].sum()
 tot_profit_loss
 
 #Calculate Percent change 
-budget_df["Percent Change"] = round(budget_df["Profit/Losses"].pct_change(),2)
+budget_df["Change"] = round(budget_df["Profit/Losses"].diff(),2)
 budget_df
 
-#Obtain min and max Percent Changes
-max_change = budget_df["Percent Change"].max()
+#Obtain average, min and max Percent Changes
+avg_change = round(budget_df["Change"].mean(),2)
+avg_change
+
+max_change = budget_df["Change"].max()
 max_change
 
 min_change = budget_df["Change"].min()
 min_change
 
+#row with max and min change
+max_chnge_row = budget_df.loc[budget_df["Change"] == max_change]
+min_chnge_row = budget_df.loc[budget_df["Change"] == min_change]
+
+#print summary
+print(f"Financial Analysis")
+print("--------------------------")
+print(f"Total Months: {len(months)}")
+print(f"Total: ${format(tot_profit_loss, ',.2f')}")
+print(f"Average Change: ${format(avg_change, ',.2f')}")
+print(f"Greatest Increase in Profits: {max_chnge_row.iloc[0,0]} (${format(max_change, ',.2f')})")
+print(f"Greatest Decrease in Profits: {min_chnge_row.iloc[0,0]} (${format(min_change, ',.2f')})")
