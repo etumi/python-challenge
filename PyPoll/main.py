@@ -29,4 +29,26 @@ num_of_candidates
 polls_summary = pd.DataFrame(polling_df["Candidate"].value_counts())
 
 #Rename columns
-polls_summary = polling_votes.rename(columns ={'Voter ID': 'Number of Votes'})
+polls_summary2 = polls_summary.rename(columns ={'Candidate': 'Number of Votes'})
+
+#Add percentage of votes
+polls_summary2["Percentage of Votes(%)"] = polls_summary2["Number of Votes"]/total_votes*100
+
+#Obtain max votes
+max_votes = polls_summary2["Number of Votes"].max()
+
+#Get the index of the winner
+winner = polls_summary2.index[polls_summary2['Number of Votes'] == max_votes].tolist()
+
+#Print final results
+print(f"Election Results")
+print(f"------------------------------")
+print(f"Total Votes: {format(total_votes, ',.0f')}")
+print(f"------------------------------")
+for i in polls_summary2.index:
+    #print(i)
+    print(f"{i}: {format(polls_summary2.loc[i,'Percentage of Votes(%)'],',.3f')}% ({format(polls_summary2.loc[i,'Number of Votes'],',.0f')})")
+print(f"------------------------------")
+for i in winner:
+    print(f"Winner: {i}")
+print(f"------------------------------")
