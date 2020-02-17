@@ -13,9 +13,6 @@ total_votes = polling_df["Voter ID"].count()
 #list of candidates
 candidates = polling_df["Candidate"].unique().tolist()
 
-#Number of votes each candidate got
-polling_df["Candidate"].value_counts()
-
 #Number of candidates
 num_of_candidates = len(candidates)
 
