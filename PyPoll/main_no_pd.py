@@ -16,10 +16,8 @@ with open(input_file_path, newline='') as input_file:
     csvreader = csv.reader(input_file, delimiter=',')
 
     csv_header = next(csvreader)
-    #print(csv_header)
 
     for row in csvreader:
-        #print(row)
         voters.append(row[0])
         candidates_all.append(row[2])
 
@@ -51,11 +49,25 @@ for i in cand_summary:
         winning_per = cand_summary[i][1]
         winner = i
 
-#print(winner)
-#total_votes = len(voters)
-#candidates = list(set(candidates_all))
+print(f"Election Results")
+print(f"------------------------------")
+print(f"Total Votes: {format(total_votes, ',.0f')}")
+print(f"------------------------------")
+for i in cand_summary:
+    print(f"{i}: {format(cand_summary[i][1]*100,',.3f')}% ({format(cand_summary[i][0],',.0f')})")
+print(f"------------------------------")
+print(f"Winner: {winner}")
 
-#print(candidates)
-#print(total_votes)
-#print(cand_summary)
+#Create output file
+output_file= open(r"Output/PyPoll_Summary.txt", "w")
+
+#store output summary in list
+output_text = [f"Election Results \n", f"------------------------------ \n", f"Total Votes: {format(total_votes, ',.0f')} \n",
+f"------------------------------ \n"]
+for i in cand_summary:
+    output_text.append(f"{i}: {format(cand_summary[i][1]*100,',.3f')}% ({format(cand_summary[i][0],',.0f')}) \n")
+output_text.extend([f"------------------------------ \n", f"Winner: {winner} \n", f"------------------------------ \n"])
+
+#output summary into text file
+output_file.writelines(output_text)
 

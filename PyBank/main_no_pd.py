@@ -15,7 +15,7 @@ with open(input_file_path, newline='') as input_file:
 
     csv_header = next(csvreader)
 
-    #get the months
+    #create variables for data
     months = []
     tot_profit_loss = 0
     profit_loss = []
