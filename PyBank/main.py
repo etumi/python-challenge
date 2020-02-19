@@ -1,40 +1,53 @@
 #Import dependacies
-import pandas as pd
+import os
+import csv
+import statistics as stat
 
 #Set input file
-task1_input_file = "Resources/budget_data.csv"
+input_file_path  = os.path.join( 'Resources', 'budget_data.csv')
+#task1_input_file = "Resources/budget_data.csv"
 
-#read in file
-budget_df = pd.read_csv(task1_input_file)
 
-#get the months out of the dates
-budget_df["Month"] = budget_df["Date"].str[:3]
+with open(input_file_path, newline='') as input_file:
 
-#get the year out of the dates
-budget_df["Year"] = budget_df["Date"].str[-4:]
+    # CSV reader specifies delimiter and variable that holds contents
+    csvreader = csv.reader(input_file, delimiter=',')
 
-#Total number of months
-months = budget_df["Month"]
-tot_num_months = len(months)
+    csv_header = next(csvreader)
 
-#Total Profits
-tot_profit_loss = budget_df["Profit/Losses"].sum()
+    #create variables for data
+    months = []
+    tot_profit_loss = 0
+    profit_loss = []
+    profit_loss_change = []
+    date = []
 
-#Calculate change over each period
-budget_df["Change"] = round(budget_df["Profit/Losses"].diff(),2)
+
+    # Read each row of data after the header. create: list of only profit loss, months and calculate total profit/loss
+    for row in csvreader:
+        months.append(row[0][:3])
+        tot_profit_loss = tot_profit_loss + float(row[1])
+        profit_loss.append(float(row[1]))
+        date.append(row[0])
+    
+    tot_num_months = len(months)
+
+    #calculate change for each profit/loss
+    for i in range(len(profit_loss)-1):
+        change = profit_loss[i+1] - profit_loss[i]
+        profit_loss_change.append(change)
 
 #Obtain average, min and max Changes
-avg_change = round(budget_df["Change"].mean(),2)
+avg_change = stat.mean(profit_loss_change)
 
-#Get max and min of changes over the period
-max_change = budget_df["Change"].max()
+max_change = max(profit_loss_change)
 
-min_change = budget_df["Change"].min()
+min_change = min(profit_loss_change)
 
+#get the index of max and min in date list
+max_change_index = profit_loss_change.index(max_change) + 1
 
-#row with max and min change
-max_chnge_row = budget_df.loc[budget_df["Change"] == max_change]
-min_chnge_row = budget_df.loc[budget_df["Change"] == min_change]
+min_change_index = profit_loss_change.index(min_change) + 1
 
 #print summary
 print(f"Financial Analysis")
@@ -42,16 +55,20 @@ print("--------------------------")
 print(f"Total Months: {tot_num_months}")
 print(f"Total: ${format(tot_profit_loss, ',.2f')}")
 print(f"Average Change: ${format(avg_change, ',.2f')}")
-print(f"Greatest Increase in Profits: {max_chnge_row.iloc[0,0]} (${format(max_change, ',.2f')})")
-print(f"Greatest Decrease in Profits: {min_chnge_row.iloc[0,0]} (${format(min_change, ',.2f')})")
+print(f"Greatest Increase in Profits: {date[max_change_index]} (${format(max_change, ',.2f')})")
+print(f"Greatest Decrease in Profits: {date[min_change_index]} (${format(min_change, ',.2f')})")
 
 #Create output file
-task1_output_file= open(r"Output/Task1 Summary.txt", "w")
+output_file= open(r"Output/PyBank_Summary.txt", "w")
 
 #store output summary in list
 output_text = [f"Financial Analysis \n", f"-------------------------- \n", f"Total Months: {len(months)} \n", f"Total: ${format(tot_profit_loss, ',.2f')} \n",
-f"Average Change: ${format(avg_change, ',.2f')} \n", f"Greatest Increase in Profits: {max_chnge_row.iloc[0,0]} (${format(max_change, ',.2f')}) \n",
-f"Greatest Decrease in Profits: {min_chnge_row.iloc[0,0]} (${format(min_change, ',.2f')}) \n" ]
+f"Average Change: ${format(avg_change, ',.2f')} \n", f"Greatest Increase in Profits: {date[max_change_index]} (${format(max_change, ',.2f')}) \n",
+f"Greatest Decrease in Profits: {date[min_change_index]} (${format(min_change, ',.2f')}) \n" ]
 
 #output summary into text file
-task1_output_file.writelines(output_text)
+output_file.writelines(output_text)        
+        
+
+        
+
