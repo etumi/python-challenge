@@ -1,57 +1,60 @@
-#Import dependacies
+#Load dependencies
 import pandas as pd
 
-#Set input file
-task1_input_file = "Resources/budget_data.csv"
+#set input file
+task2_input_file = "Resources/election_data.csv"
 
-#read in file
-budget_df = pd.read_csv(task1_input_file)
+#create data frame
+polling_df = pd.read_csv(task2_input_file)
 
-#get the months out of the dates
-budget_df["Month"] = budget_df["Date"].str[:3]
+#calculate total number of votes
+total_votes = polling_df["Voter ID"].count()
 
-#get the year out of the dates
-budget_df["Year"] = budget_df["Date"].str[-4:]
+#list of candidates
+candidates = polling_df["Candidate"].unique().tolist()
 
-#Total number of months
-months = budget_df["Month"]
-tot_num_months = len(months)
+#Number of candidates
+num_of_candidates = len(candidates)
 
-#Total Profits
-tot_profit_loss = budget_df["Profit/Losses"].sum()
+#Create dataframe of tallied votes
+polls_summary = pd.DataFrame(polling_df["Candidate"].value_counts())
 
-#Calculate change over each period
-budget_df["Change"] = round(budget_df["Profit/Losses"].diff(),2)
+#Rename columns
+polls_summary2 = polls_summary.rename(columns ={'Candidate': 'Number of Votes'})
 
-#Obtain average, min and max Changes
-avg_change = round(budget_df["Change"].mean(),2)
+#Add percentage of votes
+polls_summary2["Percentage of Votes(%)"] = polls_summary2["Number of Votes"]/total_votes*100
 
-#Get max and min of changes over the period
-max_change = budget_df["Change"].max()
+#Obtain max votes
+max_votes = polls_summary2["Number of Votes"].max()
 
-min_change = budget_df["Change"].min()
+#Get the index of the winner
+winner = polls_summary2.index[polls_summary2['Number of Votes'] == max_votes].tolist()
 
-
-#row with max and min change
-max_chnge_row = budget_df.loc[budget_df["Change"] == max_change]
-min_chnge_row = budget_df.loc[budget_df["Change"] == min_change]
-
-#print summary
-print(f"Financial Analysis")
-print("--------------------------")
-print(f"Total Months: {tot_num_months}")
-print(f"Total: ${format(tot_profit_loss, ',.2f')}")
-print(f"Average Change: ${format(avg_change, ',.2f')}")
-print(f"Greatest Increase in Profits: {max_chnge_row.iloc[0,0]} (${format(max_change, ',.2f')})")
-print(f"Greatest Decrease in Profits: {min_chnge_row.iloc[0,0]} (${format(min_change, ',.2f')})")
+#Print final results
+print(f"Election Results")
+print(f"------------------------------")
+print(f"Total Votes: {format(total_votes, ',.0f')}")
+print(f"------------------------------")
+for i in polls_summary2.index:
+    print(f"{i}: {format(polls_summary2.loc[i,'Percentage of Votes(%)'],',.3f')}% ({format(polls_summary2.loc[i,'Number of Votes'],',.0f')})")
+print(f"------------------------------")
+for i in winner:
+    print(f"Winner: {i}")
+print(f"------------------------------")
 
 #Create output file
-task1_output_file= open(r"Output/Task1 Summary.txt", "w")
+task2_output_file= open(r"Output/Task2 Summary.txt", "w")
 
 #store output summary in list
-output_text = [f"Financial Analysis \n", f"-------------------------- \n", f"Total Months: {len(months)} \n", f"Total: ${format(tot_profit_loss, ',.2f')} \n",
-f"Average Change: ${format(avg_change, ',.2f')} \n", f"Greatest Increase in Profits: {max_chnge_row.iloc[0,0]} (${format(max_change, ',.2f')}) \n",
-f"Greatest Decrease in Profits: {min_chnge_row.iloc[0,0]} (${format(min_change, ',.2f')}) \n" ]
+output_text = [f"Election Results \n", f"------------------------------ \n", f"Total Votes: {format(total_votes, ',.0f')} \n",
+f"------------------------------ \n"]
+for i in polls_summary2.index:
+    output_text.append(f"{i}: {format(polls_summary2.loc[i,'Percentage of Votes(%)'],',.3f')}% ({format(polls_summary2.loc[i,'Number of Votes'],',.0f')}) \n")
+output_text.append(f"------------------------------ \n")
+for i in winner:
+    output_text.append(f"Winner: {i} \n")
+output_text.append(f"------------------------------ \n")
 
 #output summary into text file
-task1_output_file.writelines(output_text)
+task2_output_file.writelines(output_text)
